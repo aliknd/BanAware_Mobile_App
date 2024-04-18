@@ -1,5 +1,5 @@
 import React from "react";
-import { ImageBackground, StyleSheet, View, Image, Text } from "react-native";
+import { ImageBackground, StyleSheet, View, Image } from "react-native";
 
 import colors from "../config/colors";
 import AppButton from "../components/AppButton";
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 200,
-    height: 120,
+    height: 150,
   },
   logoContainer: {
     position: "absolute",

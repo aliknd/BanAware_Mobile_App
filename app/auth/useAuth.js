@@ -6,15 +6,23 @@ import authStorage from "../auth/storage";
 const useAuth = () => {
   const { user, setUser } = useContext(AuthContext);
 
-  const logIn = (authToken) => {
-    const user = jwtDecode(authToken);
-    setUser(user);
-    authStorage.storeToken(authToken);
+  const logIn = async (authToken) => {
+    try {
+      await authStorage.storeToken(authToken); // Wait for the token to be stored
+      const user = jwtDecode(authToken);
+      setUser(user);
+    } catch (error) {
+      console.log("Error logging in", error);
+    }
   };
 
-  const logOut = () => {
-    setUser(null);
-    authStorage.removeToken();
+  const logOut = async () => {
+    try {
+      await authStorage.removeToken(); // Wait for the token to be removed
+      setUser(null);
+    } catch (error) {
+      console.log("Error logging out", error);
+    }
   };
 
   return { user, logIn, logOut };

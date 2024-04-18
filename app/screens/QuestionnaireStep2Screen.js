@@ -1,26 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 
 import { AppFormText, AppForm, SubmitButton } from "../components/forms";
-import { ScrollView, StyleSheet, Alert, Image, Text } from "react-native";
+import { ScrollView, StyleSheet, Alert, Text } from "react-native";
 import listingsApi from "../api/listings";
 import Screen from "../components/Screen";
-import UploadScreen from "./UploadScreen";
-import useAuth from "../auth/useAuth";
-import colors from "../config/colors";
-import endpointURL from "../api/serverPoint";
-import CategoryPickerItem from "../components/CategoryPickerItem";
-import PickerItem from "../components/PickerItem";
-import { CommonActions, useNavigation } from "@react-navigation/native";
-import authStorage from "../auth/storage";
+import { CommonActions } from "@react-navigation/native";
 import AppFormPickerSingle from "../components/forms/AppFormPickerSingle";
+import useAuth from "../auth/useAuth";
+import UploadScreen from "./UploadScreen";
+import colors from "../config/colors";
+import AppFormDateTimePicker from "../components/forms/AppFormDateTimePicker";
 
-const validationSchema = Yup.object().shape({
-  //images: Yup.array().min(1, "Please select at least one image."),
-  category: Yup.object().required().nullable().label("Your input"),
-});
+const generateValidationSchemaStep2 = (categoryResponses) => {
+  if (!Array.isArray(categoryResponses) || categoryResponses.length === 0) {
+    return Yup.object().shape({});
+  }
 
-const use = [
+  const schemaFields = categoryResponses.reduce((acc, response) => {
+    let fieldName;
+    switch (response.step1Value.label) {
+      case "Use":
+        fieldName = `useTime_${response.label}`;
+        acc[fieldName] = Yup.date()
+          .required(`Please enter the date and time for ${response.label}.`)
+          .max(new Date(), "Date and time cannot be in the future.")
+          .label(`Use selection for ${response.label}`);
+        break;
+      case "Crave":
+        fieldName = `craveIntensity_${response.label}`;
+        acc[fieldName] = Yup.object()
+          .nullable()
+          .required(`Please select an intensity for ${response.label}.`)
+          .label(`CraveIntensity_${response.label}`);
+        break;
+      case "None":
+        fieldName = `confirmation_${response.label}`;
+        acc[fieldName] = Yup.object()
+          .nullable()
+          .required(`Please confirm your choice for ${response.label}.`)
+          .label(`Confirmation_${response.label}`);
+        break;
+      default:
+        fieldName = undefined;
+    }
+
+    return acc;
+  }, {});
+
+  return Yup.object().shape(schemaFields);
+};
+
+const useOptions = [
   { label: "Less than 30 minutes ago", value: 1 },
   { label: "About 1 hour ago", value: 2 },
   { label: "1-2 hours ago", value: 3 },
@@ -31,7 +62,7 @@ const use = [
   { label: "More than 10 hours ago", value: 8 },
 ];
 
-const crave = [
+const craveOptions = [
   { label: "0", value: 0 },
   { label: "1", value: 1 },
   { label: "2", value: 2 },
@@ -45,84 +76,17 @@ const crave = [
   { label: "10", value: 10 },
 ];
 
-const confirmU = [
+const confirmOptions = [
   { label: "Not Craved", value: 0 },
   { label: "Not Used", value: 1 },
   { label: "Not Craved/Used", value: 2 },
 ];
 
 function QuestionnaireStep2Screen({ route, navigation }) {
-  const { step1Data } = route.params;
-  //console.log(step1Data);
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [badge, setBadge] = useState([]);
+  const { categoryResponses } = route.params;
+  //console.log(categoryResponses);
 
-  const getQuestions = async () => {
-    try {
-      const token = await authStorage.getToken();
-      const response = await fetch(endpointURL + "/questions", {
-        headers: {
-          "x-auth-token": token,
-          "Content-Type": "application/json",
-        },
-      });
-      const json = await response.json();
-      setData(json);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getRecords = async () => {
-    try {
-      const token = await authStorage.getToken();
-      const rResponse = await fetch(endpointURL + "/records", {
-        headers: {
-          "x-auth-token": token,
-          "Content-Type": "application/json",
-        },
-      });
-      const rJson = await rResponse.json();
-      const myRecordArray = rJson.filter((d) => d.user_id == user.userId);
-      var lenRecordArray = myRecordArray.length;
-      var userBadge = Math.floor(lenRecordArray / 4);
-      setBadge(userBadge);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getQuestions();
-    getRecords();
-  }, []);
-  // console.log("88888888888888888888888");
-  // console.log(step1Data);
-  // console.log("88888888888888888888888");
-
-  //console.log(step1Data.category.map((item) => item.value));
-
-  const { user } = useAuth();
-
-  var hours = new Date().getHours();
-  if (hours != null) {
-    if (step1Data.craveuse["label"] == "Use") {
-      var finalId = 1;
-      var finalSelect = use;
-    } else if (step1Data.craveuse["label"] == "Crave") {
-      var finalId = 2;
-      var finalSelect = crave;
-    } else {
-      var finalId = 3;
-      var finalSelect = confirmU;
-    }
-    var imSource = require("../assets/animations/thinking.png");
-  }
+  const validationSchema = generateValidationSchemaStep2(categoryResponses);
 
   const [uploadVisible, setUploadVisible] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -130,37 +94,46 @@ function QuestionnaireStep2Screen({ route, navigation }) {
   const navPage = () => {
     navigation.navigate("Questionnaires");
   };
-  // const handleSubmit = async (listing, { resetForm }) => {
-  //   setProgress(0);
-  //   setUploadVisible(true);
-  //   const result = await listingsApi.addListing({ ...listing }, (progress) =>
-  //     setProgress(progress)
-  //   );
 
-  //   if (!result.ok) {
-  //     setUploadVisible(false);
-  //     return Alert.alert("Could not save the listing");
-  //   }
-  //   navPage();
-  //   resetForm();
+  const { user } = useAuth();
 
-  //   // Reset the stack to the HomeScreen
-  //   navigation.dispatch(
-  //     CommonActions.reset({
-  //       index: 0,
-  //       routes: [{ name: "Account" }],
-  //     })
-  //   );
-  // };
+  function handleSubmit(values, { resetForm }) {
+    //console.log("triggered!");
+    const updatedResponses = categoryResponses.map((response) => {
+      // Depending on the response, extract the relevant value from the form
+      let step2Value;
+      switch (response.step1Value.label) {
+        case "Use":
+          step2Value = values[`useTime_${response.label}`];
+          break;
+        case "Crave":
+          step2Value = values[`craveIntensity_${response.label}`];
+          break;
+        case "None":
+          step2Value = values[`confirmation_${response.label}`];
+          break;
+        default:
+          break;
+      }
+      return {
+        ...response,
+        step2Value: step2Value || {}, // Add the step2Value or an empty object if not found
+      };
+    });
 
-  const handleSubmit = async (listing, { resetForm }) => {
+    // Navigate to the next screen with the updatedResponses
+    // navigation.navigate("QuestionnaireStep3Screen", {
+    //   finalResponses: updatedResponses,
+    // });
+    // console.log(updatedResponses);
     setProgress(0);
     setUploadVisible(true);
 
     // Add an artificial delay of 2 seconds (adjust as needed)
     setTimeout(async () => {
-      const result = await listingsApi.addListing({ ...listing }, (progress) =>
-        setProgress(progress)
+      const result = await listingsApi.addListing(
+        { ...updatedResponses, userId: user.userId },
+        (progress) => setProgress(progress)
       );
 
       if (!result.ok) {
@@ -181,8 +154,34 @@ function QuestionnaireStep2Screen({ route, navigation }) {
           );
         }, 2000); // Delayed navigation after 2 seconds (adjust as needed)
       }
-    }, 2000); // Delayed submission after 2 seconds (adjust as needed)
-  };
+    }, 1000); // Delayed submission after 2 seconds (adjust as needed)
+  }
+
+  const initialValues = categoryResponses.reduce((values, response) => {
+    let fieldName;
+    switch (response.step1Value.label) {
+      case "Use":
+        fieldName = `useTime_${response.label}`;
+        values[fieldName] = new Date(); // Set the initial value to the current date
+        break;
+      case "Crave":
+        fieldName = `craveIntensity_${response.label}`;
+        values[fieldName] = ""; // Set a default value for crave intensity
+        break;
+      case "None":
+        fieldName = `confirmation_${response.label}`;
+        values[fieldName] = null; // Set the initial value to null or an appropriate default
+        break;
+      default:
+        fieldName = undefined;
+    }
+
+    if (fieldName) {
+      values[fieldName] = null; // Set the initial value to null or an appropriate default
+    }
+
+    return values;
+  }, {});
 
   return (
     <Screen style={styles.quScreen}>
@@ -193,49 +192,75 @@ function QuestionnaireStep2Screen({ route, navigation }) {
           visible={uploadVisible}
         />
         <AppForm
-          initialValues={{
-            cquestion: isLoading ? 404 : data[finalId]?.id,
-            category: null,
-            cuser: user.userId,
-            substanceValue: step1Data.category.map((item) => item.value),
-            substanceLabel: step1Data.category.map((item) => item.label),
-            cuseValue: step1Data.craveuse["value"],
-            cuseLabel: step1Data.craveuse["label"],
-            userBadge: badge,
-          }}
+          initialValues={initialValues}
           onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
-          {isLoading || data.length === 0 ? (
-            <Image
-              style={styles.loading}
-              source={require("../assets/animations/loading_gif_s.gif")}
-            />
-          ) : (
-            <AppFormText name="hcquestion">{data[finalId]?.quest}</AppFormText>
-          )}
+          {categoryResponses.map((response, index) => {
+            let Component = null;
+            // Use response.selectedValue.label to match the label property
+            switch (response.step1Value.label) {
+              case "Use":
+                Component = (
+                  <>
+                    <AppFormText>
+                      When did you last use{" "}
+                      <Text style={{ color: colors.darkGreen }}>
+                        {response.label}
+                      </Text>
+                      ?
+                    </AppFormText>
+                    <AppFormDateTimePicker
+                      name={`useTime_${response.label}`}
+                      placeholder="Select Date and Time"
+                    />
+                  </>
+                );
+                break;
+              case "Crave":
+                Component = (
+                  <>
+                    <AppFormText>
+                      Please rate your current craving for{" "}
+                      <Text style={{ color: colors.darkGreen }}>
+                        {response.label}
+                      </Text>{" "}
+                      on a scale of 0-10, with 0 being “no cravings” and 10
+                      being “extremely intense cravings".
+                    </AppFormText>
+                    <AppFormPickerSingle
+                      items={craveOptions}
+                      name={`craveIntensity_${response.label}`}
+                      placeholder="Select Intensity"
+                    />
+                  </>
+                );
+                break;
+              case "None":
+                Component = (
+                  <>
+                    <AppFormText>
+                      You have chosen "None" for{" "}
+                      <Text style={{ color: colors.darkGreen }}>
+                        {response.label}
+                      </Text>
+                      . Please confirm!
+                    </AppFormText>
+                    <AppFormPickerSingle
+                      items={confirmOptions}
+                      name={`confirmation_${response.label}`}
+                      placeholder="Confirm"
+                    />
+                  </>
+                );
+                break;
+              default:
+                break;
+            }
 
-          <Image
-            style={{
-              width: "100%",
-              height: 370,
-              borderRadius: 30,
-              overlayColor: colors.bgcolor,
-              overflow: "hidden",
-              marginVertical: 15,
-            }}
-            source={imSource}
-          />
-
-          <AppFormPickerSingle
-            items={finalSelect}
-            placeholder="Answer"
-            icon="paw"
-            name="category"
-            PickerItemComponent={PickerItem}
-          />
-
-          <SubmitButton title="Post" />
+            return <React.Fragment key={index}>{Component}</React.Fragment>;
+          })}
+          <SubmitButton title="Submit" />
         </AppForm>
       </ScrollView>
     </Screen>

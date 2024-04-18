@@ -13,4 +13,5 @@ export default {
   error: "#fa1010",
   lightGreen: "#063852",
   darkGreen: "#063852",
+  blue: "#45b6fe",
 };

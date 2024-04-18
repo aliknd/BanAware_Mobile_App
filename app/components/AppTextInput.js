@@ -1,10 +1,12 @@
 import React from "react";
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput, StyleSheet, useColorScheme } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import defaultStyles from "../config/styles";
 
 function AppTextInput({ icon, ...otherProps }) {
+  const scheme = useColorScheme();
+  const placeholderTextColor = scheme === "dark" ? "darkgray" : "gray";
   return (
     <View style={styles.container}>
       {icon && (
@@ -15,7 +17,11 @@ function AppTextInput({ icon, ...otherProps }) {
           style={styles.icon}
         />
       )}
-      <TextInput style={[defaultStyles.text, { flex: 1 }]} {...otherProps} />
+      <TextInput
+        placeholderTextColor={placeholderTextColor}
+        style={[defaultStyles.text, { flex: 1 }]}
+        {...otherProps}
+      />
     </View>
   );
 }

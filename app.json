@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "BanAware",
-    "slug": "BanAware",
+    "slug": "banaware",
     "scheme": "myapp",
     "privacy": "unlisted",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./app/assets/splash.png",
       "resizeMode": "cover",
@@ -31,7 +31,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.alikargarandehkordi.banaware",
-      "buildNumber": "1.0.9"
+      "buildNumber": "1.5.7"
     },
     "android": {
       "adaptiveIcon": {
@@ -63,7 +63,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "670c8238-1b65-403d-8383-66e6dea959d1"
+        "projectId": "d1439498-0813-4d7a-a830-9d2fe0986e5a"
       }
     }
   }

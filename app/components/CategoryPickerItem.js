@@ -2,6 +2,7 @@ import React from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import AppText from "./AppText";
 import colors from "../config/colors";
+import fonts from "../config/fonts";
 
 function CategoryPickerItem({ item, onPress, selected }) {
   return (
@@ -9,10 +10,15 @@ function CategoryPickerItem({ item, onPress, selected }) {
       onPress={onPress}
       style={[
         styles.container,
-        selected && { backgroundColor: colors.primary },
+        selected && { backgroundColor: colors.secondary },
       ]}
     >
-      <AppText style={{ color: selected ? colors.black : colors.white }}>
+      <AppText
+        style={{
+          color: selected ? colors.blue : colors.white,
+          fontFamily: fonts.fifthSemiBoldItalic,
+        }}
+      >
         {item.label}
       </AppText>
     </TouchableOpacity>
@@ -21,7 +27,15 @@ function CategoryPickerItem({ item, onPress, selected }) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 10,
+    backgroundColor: colors.primary,
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 10,
+    alignItems: "center",
+    alignSelf: "center",
+    width: "80%",
+    marginVertical: 10,
   },
 });
 

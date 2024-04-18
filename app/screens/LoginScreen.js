@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Image, StyleSheet } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 
 import * as Yup from "yup";
 import colors from "../config/colors";
@@ -31,37 +37,45 @@ function LoginScreen(props) {
   };
   return (
     <Screen style={styles.screen}>
-      <Image style={styles.logo} source={require("../assets/logo.png")} />
-
-      <AppForm
-        initialValues={{ email: "", password: "" }}
-        onSubmit={handleSubmit}
-        validationSchema={validationSchema}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+        style={styles.keyboardAvoidingView}
       >
-        <CustomErrorMessage
-          error="Invalid email and/or password."
-          visible={loginFailed}
-        />
-        <AppFormField
-          autoCapitalize="none"
-          autoCorrect={false}
-          icon="email"
-          keyboardType="email-address"
-          placeholder="Email"
-          textContentType="emailAddress"
-          name="email"
-        />
-        <AppFormField
-          autoCapitalize="none"
-          autoCorrect={false}
-          icon="lock"
-          placeholder="Password"
-          secureTextEntry={true}
-          textContentType="password"
-          name="password"
-        />
-        <SubmitButton title="Login" />
-      </AppForm>
+        <ScrollView>
+          <Image style={styles.logo} source={require("../assets/logo.png")} />
+
+          <AppForm
+            initialValues={{ email: "", password: "" }}
+            onSubmit={handleSubmit}
+            validationSchema={validationSchema}
+          >
+            <CustomErrorMessage
+              error="Invalid email and/or password."
+              visible={loginFailed}
+            />
+            <AppFormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="email"
+              keyboardType="email-address"
+              placeholder="Email"
+              textContentType="emailAddress"
+              name="email"
+            />
+            <AppFormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="lock"
+              placeholder="Password"
+              secureTextEntry={true}
+              textContentType="password"
+              name="password"
+            />
+            <SubmitButton title="Login" />
+          </AppForm>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
@@ -72,10 +86,10 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 200,
-    height: 120,
+    height: 150,
     alignSelf: "center",
     marginTop: 50,
-    marginBottom: 20,
+    marginBottom: 90,
   },
   error: {
     color: colors.error,

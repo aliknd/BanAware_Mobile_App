@@ -1,28 +1,16 @@
 import React, { useState, useEffect } from "react";
 import * as Yup from "yup";
 
-import { AppFormText, AppForm, SubmitButton } from "../components/forms";
+import { AppFormText } from "../components/forms";
 import { ScrollView, StyleSheet, Alert, Image, Text } from "react-native";
-import listingsApi from "../api/listings";
 import Screen from "../components/Screen";
-import UploadScreen from "./UploadScreen";
 import useAuth from "../auth/useAuth";
 import colors from "../config/colors";
 import endpointURL from "../api/serverPoint";
-import CategoryPickerItem from "../components/CategoryPickerItem";
-import PickerItem from "../components/PickerItem";
-import { CommonActions, useNavigation } from "@react-navigation/native";
 import authStorage from "../auth/storage";
-import AppFormPickerSingle from "../components/forms/AppFormPickerSingle";
-
-const validationSchema = Yup.object().shape({
-  //images: Yup.array().min(1, "Please select at least one image."),
-  category: Yup.object().required().nullable().label("Your input"),
-});
 
 function IdFinderStep2Screen({ route }) {
   const { step1Data } = route.params;
-  //console.log(step1Data);
   const [isLoading, setLoading] = useState(true);
   const [userArray, setUserArray] = useState([]);
   const [recordNumber, setRecordNumber] = useState([]);
@@ -38,7 +26,6 @@ function IdFinderStep2Screen({ route }) {
         },
       });
       const uJson = await uResponse.json();
-      //console.log(rJson);
       const myUserArray = uJson.filter((d) => d.email == step1Data.email);
       setUserArray(myUserArray);
     } catch (error) {
@@ -47,8 +34,6 @@ function IdFinderStep2Screen({ route }) {
       setLoading(false);
     }
   };
-
-  console.log(userArray);
 
   const getRecords = async () => {
     try {
@@ -60,7 +45,7 @@ function IdFinderStep2Screen({ route }) {
         },
       });
       const rJson = await rResponse.json();
-      const myRecordArray = rJson.filter((d) => d.user_id == user.userId);
+      const myRecordArray = rJson.filter((d) => d.user_id == userArray[0]?.id);
       var lenRecordArray = myRecordArray.length;
       setRecordNumber(lenRecordArray);
       var userBadge = Math.floor(lenRecordArray / 4);
@@ -74,13 +59,13 @@ function IdFinderStep2Screen({ route }) {
 
   useEffect(() => {
     getUsers();
-    getRecords();
   }, []);
-  // console.log("88888888888888888888888");
-  //console.log(recordArray);
-  // console.log("88888888888888888888888");
 
-  //console.log(step1Data.category.map((item) => item.value));
+  useEffect(() => {
+    if (userArray.length > 0) {
+      getRecords();
+    }
+  }, [userArray]); // This effect depends on `userArray`
 
   const { user } = useAuth();
 
@@ -95,7 +80,7 @@ function IdFinderStep2Screen({ route }) {
         ) : (
           <>
             <AppFormText>Email: {userArray[0].email}</AppFormText>
-            <AppFormText>Age: {userArray[0].ageCategory}</AppFormText>
+            <AppFormText>Age: {userArray[0].birthdate}</AppFormText>
             <AppFormText>Gender: {userArray[0].genCategory}</AppFormText>
             <AppFormText>ID: {userArray[0].id}</AppFormText>
             <AppFormText>Badge: {badge}</AppFormText>

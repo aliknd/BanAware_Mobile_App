@@ -1,11 +1,22 @@
 import React from "react";
 import { Text, StyleSheet, View } from "react-native";
 import colors from "../../config/colors";
+import fonts from "../../config/fonts";
 
 function AppFormText({ children }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{children}</Text>
+      <Text
+        style={{
+          fontFamily: fonts.fifthBoldItalic,
+          textAlign: "center",
+          color: colors.white,
+          fontSize: 16,
+          marginLeft: 10,
+        }}
+      >
+        {children}
+      </Text>
     </View>
   );
 }
@@ -17,13 +28,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginTop: 12,
     alignItems: "center",
-  },
-  text: {
-    marginLeft: 10,
-    fontSize: 17,
-    fontWeight: "bold",
-    color: colors.white,
-    textAlign: "center",
   },
 });
 

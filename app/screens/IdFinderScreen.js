@@ -2,7 +2,7 @@ import React from "react";
 import * as Yup from "yup";
 
 import { AppFormField, AppForm, SubmitButton } from "../components/forms";
-import { ScrollView, StyleSheet, Alert, Image, Text } from "react-native";
+import { ScrollView, StyleSheet, Image } from "react-native";
 import Screen from "../components/Screen";
 import useAuth from "../auth/useAuth";
 import colors from "../config/colors";
@@ -14,8 +14,6 @@ const validationSchema = Yup.object().shape({
 
 function IdFinderScreen({ navigation }) {
   const { user } = useAuth();
-  //var hours = new Date().getHours();
-  //console.log(user);
 
   const handleSubmit = async (listing) => {
     navigation.navigate(routes.IDFINDER_STEP2, { step1Data: listing });

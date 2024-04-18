@@ -3,7 +3,6 @@ import { FlatList, StyleSheet } from "react-native";
 
 import Screen from "../components/Screen";
 import Card from "../components/Card";
-import colors from "../config/colors";
 import routes from "../navigation/routes";
 import listingsApi from "../api/listings";
 import AppText from "../components/AppText";
@@ -18,8 +17,6 @@ function ListingsScreen({ navigation }) {
     loading,
     request: loadListings,
   } = useApi(listingsApi.getListings);
-
-  //console.log(listings);
 
   useEffect(() => {
     loadListings();

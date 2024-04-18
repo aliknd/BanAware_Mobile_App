@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import AppText from "./AppText";
 import colors from "../config/colors";
+import fonts from "../config/fonts";
 
 function CategoryPickerItemColumn({ item, onPress, selected }) {
   return (
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: "white",
     textAlign: "center",
+    fontFamily: fonts.fifthSemiBoldItalic,
   },
   selectedLabel: {
     color: colors.primary, // Define your selected item label color
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   selectedImageContainer: {
-    backgroundColor: colors.primary, // Define your selected item background color for the image container
+    backgroundColor: colors.medium, // Define your selected item background color for the image container
   },
   fruitLogo: {
     width: "100%",

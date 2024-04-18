@@ -3,10 +3,10 @@ import { Image, View, StyleSheet, ScrollView } from "react-native";
 import AppText from "../components/AppText";
 import Screen from "../components/Screen";
 import colors from "../config/colors";
+import fonts from "../config/fonts";
 
 function ListingDetailsScreen({ route }) {
   const listing = route.params;
-  //console.log(listing);
   return (
     <ScrollView>
       <Screen>
@@ -35,6 +35,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     borderRadius: 20,
+    fontFamily: fonts.fifthRegular,
+    textAlign: "auto",
   },
   image: {
     width: "100%",

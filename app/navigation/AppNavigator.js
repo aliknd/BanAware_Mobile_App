@@ -4,14 +4,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
 
 import RecordNavigator from "./RecordNavigator";
-import QuestionnaireScreen from "../screens/QuestionnaireScreen";
 import FeedNavigator from "./FeedNavigator";
 import NewListingButton from "./NewListingButton";
 import expoPushTokensApi from "../api/expoPushTokens";
 import navigation from "./rootNavigation";
-import colors from "../config/colors";
-import QuestionnaireStep2Screen from "../screens/QuestionnaireStep2Screen";
 import { scheduleNotifications } from "../components/NotificationSender";
+import Constants from "expo-constants";
+import fonts from "../config/fonts";
 
 const Tab = createBottomTabNavigator();
 
@@ -42,16 +41,21 @@ const AppNavigator = () => {
     try {
       const permission = await Notifications.requestPermissionsAsync();
       if (!permission.granted) return;
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      token = await Notifications.getExpoPushTokenAsync({
+        projectId: Constants.expoConfig.extra.eas.projectId,
+      });
       expoPushTokensApi.register(token);
     } catch (error) {
-      console.log("Error getting a push token", error);
+      console.log("Error getting a push token in app navigator", error);
     }
   };
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarShowLabel: false,
+        tabBarLabelStyle: {
+          fontFamily: fonts.fifthBoldItalic,
+        },
       }}
       initialRouteName={initialRoute}
     >
@@ -74,11 +78,7 @@ const AppNavigator = () => {
         component={FeedNavigator}
         options={({ navigation }) => ({
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="format-list-text"
-              color={color}
-              size={45}
-            />
+            <MaterialCommunityIcons name="ballot" color={color} size={42} />
           ),
           headerShown: false,
         })}

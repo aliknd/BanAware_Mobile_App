@@ -57,9 +57,21 @@ function ListingsScreen() {
             renderItem={({ item }) => (
               <AppRecordText>
                 <Text style={styles.logodescColor}>
-                  {item.crave_use}: {item.substance_fruit} {"\n"}
+                  {item.substance_fruit_label}; {"\n"}
+                  {item.crave_use_none_label}:{" "}
+                  {moment(
+                    item.crave_use_none_value,
+                    moment.ISO_8601,
+                    true
+                  ).isValid()
+                    ? moment(item.crave_use_none_value).format(
+                        "dddd, MMMM Do YYYY, h:mm a"
+                      )
+                    : item.crave_use_none_value}
+                  {"\n"}
                 </Text>
-                {moment(item.created_at).format(" dddd MMM Do, YYYY - hh:mm a")}
+                <Text style={{ color: colors.black }}>@:</Text>
+                {moment(item.created_at).format("dddd, MMMM Do YYYY - h:mm a")}
               </AppRecordText>
             )}
           />

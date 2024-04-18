@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import colors from "../config/colors";
 import AppText from "./AppText";
+import fonts from "../config/fonts";
 
 function ListItem({ title, subTitle, image, IconComponent, onPress }) {
   return (
@@ -45,11 +46,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "500",
+    fontSize: 16,
     color: colors.white,
+    fontFamily: fonts.fifthBoldItalic,
   },
   subTitle: {
     color: colors.medium,
     color: colors.white,
+    fontFamily: fonts.thirdBoldItalic,
   },
   detailsContainer: {
     flex: 1,

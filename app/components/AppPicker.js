@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Modal,
-  Button,
   FlatList,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,7 +12,8 @@ import defaultStyles from "../config/styles";
 import AppText from "./AppText";
 import Screen from "./Screen";
 import PickerItem from "./PickerItem";
-import colors from "../config/colors";
+import fonts from "../config/fonts";
+import AppPickerButton from "./AppPickerButton";
 
 function AppPicker({
   icon,
@@ -35,10 +35,6 @@ function AppPicker({
     }
   };
 
-  console.log("++++++++++++++++++++++++++ AppPicker");
-  console.log(selectedItems);
-  console.log("++++++++++++++++++++++++++ AppPicker");
-
   return (
     <>
       <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
@@ -58,14 +54,17 @@ function AppPicker({
           </AppText>
           <MaterialCommunityIcons
             name="chevron-down"
-            size={20}
+            size={30}
             color={defaultStyles.colors.medium}
           />
         </View>
       </TouchableWithoutFeedback>
       <Modal visible={modalVisible} animationType="slide">
         <Screen>
-          <Button title="Close" onPress={() => setModalVisible(false)} />
+          <AppPickerButton
+            title="Done"
+            onPress={() => setModalVisible(false)}
+          />
           <View style={styles.flatlist}>
             <FlatList
               data={items}
@@ -106,9 +105,10 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
+    fontFamily: fonts.fifthSemiBoldItalic,
   },
   flatlist: {
-    paddingBottom: 70,
+    paddingBottom: 150,
   },
 });
 
