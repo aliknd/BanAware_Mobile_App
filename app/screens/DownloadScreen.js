@@ -20,28 +20,36 @@ function DownloadScreen({ navigation }, props) {
   const [userData, setUserData] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
-  const getFitBitUsers = async () => {
+  const checkUserInParticipants = async () => {
     try {
       const response = await fetch(
-        "https://fitbitcollector.slades.dev/participants/apiindex?token=17bfba7f3a11578f344d1b00ee79e344"
+        "https://fitbitinator.slades.dev/api/v1/participants",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer 81f03b187ff499b2e327938ad1538c41",
+          },
+        }
       );
       const json = await response.json();
-      const isUserIdInArray = json.ids.includes(user.userId.toString());
+      const isUserIdInArray = json.includes(user.userId.toString());
+      console.log(json);
+      console.log(user.userId);
       setUserData(isUserIdInArray);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getFitBitUsers();
+    checkUserInParticipants();
   }, []);
 
   const { user } = useAuth();
 
-  //console.log(userData);
+  //console.log(participants);
 
   return (
     <Screen style={styles.mycontainer}>
@@ -83,7 +91,8 @@ function DownloadScreen({ navigation }, props) {
               title="FitBit Connection"
               onPress={() =>
                 Linking.openURL(
-                  "https://fitbitcollector.slades.dev?study_id=" + user.userId
+                  "https://fitbitinator.slades.dev/register?study=banana&correlation_id=" +
+                    user.userId
                 )
               }
             />

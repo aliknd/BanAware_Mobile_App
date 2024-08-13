@@ -23,7 +23,9 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ]
+      ],
+      "expo-font",
+      "expo-secure-store"
     ],
     "ios": {
       "config": {
@@ -31,7 +33,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.alikargarandehkordi.banaware",
-      "buildNumber": "1.5.7"
+      "buildNumber": "1.5.9"
     },
     "android": {
       "adaptiveIcon": {
